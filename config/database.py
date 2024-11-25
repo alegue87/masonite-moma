@@ -41,17 +41,6 @@ DATABASES = {
         "grammar": "postgres",
         "log_queries": env("DB_LOG"),
     },
-     "postgres_test": {
-        "driver": "postgres",
-        "host": env("DB_HOST_TEST"),
-        "user": env("DB_USERNAME_TEST"),
-        "password": env("DB_PASSWORD_TEST"),
-        "database": env("DB_DATABASE_TEST"),
-        "port": env("DB_PORT_TEST"),
-        "prefix": "",
-        "grammar": "postgres",
-        "log_queries": env("DB_LOG"),
-    },
     "mssql": {
         "driver": "mssql",
         "host": env("MSSQL_DATABASE_HOST"),

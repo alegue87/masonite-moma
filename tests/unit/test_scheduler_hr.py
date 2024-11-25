@@ -8,6 +8,7 @@ RUN_PENDING_INTERVAL = 0.1
 RUN_MANAGER_INTERVAL = 0.1
 
 class SchedulerHrTestCase(TestCase):
+    
     def test_scheduler_hr_is_empty(self):
         hr = SchedulerHighRate(self.application, RUN_PENDING_INTERVAL, RUN_MANAGER_INTERVAL)
 

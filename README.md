@@ -4,7 +4,8 @@ Added features to Masonite framework:
 
 - Scheduler High Rate
   - Parallel jobs execution
-  - Load / discharge Job from database
+  - Load / discharge Jobs from database
+  - Dynamic code loading ( at runtime, no watchdog or --reload flag )
 
 ## Load migrations and seeds
 
@@ -16,9 +17,18 @@ Added features to Masonite framework:
 
 ### Test mode
 
+`export DB_CONFIG_PATH='tests/database_config.py'`
+
 `python craft migrate -c postgres_test`
 
-`python craft seed:run Jobs -c postgres_test`
+`python craft seed:run Jobs`
+
+`unset DB_CONFIG_PATH`
+
+export necessary because the config option not work correctly, for example:
+
+`python craft seed:run Jobs --config tests/database_config.py`
+
 
 For running tests:
 
@@ -33,6 +43,6 @@ gunicorn:
 
 The execution of the application with craft create a double instance of application,
 it is because the watch-dog used in package Werkzeug don't close the first instance but
-create another for watching the files changes.
+create another for watching the files changes, threafter is not raccomanded.
 
 ## 

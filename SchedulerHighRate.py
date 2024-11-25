@@ -61,7 +61,12 @@ def run_manager(app, interval=5):
         def run(cls):
 
             def run_threaded(app, job_model):
-                method = Dimport(module_name=job_model.name, class_name=job_model.name, app=app, job_model=job_model).get_start_method()
+                method = Dimport(
+                    module_name=job_model.class_name, 
+                    class_name =job_model.class_name, 
+                    app=app, 
+                    job_model=job_model \
+                ).get_start_method()
 
                 job_thread = threading.Thread(target=method, kwargs={'app':app, 'job_model':job_model})
                 job_thread.start()
