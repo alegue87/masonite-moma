@@ -11,6 +11,8 @@ Added features to Masonite framework:
 
 ### Dev mode
 
+Create from .env-example a .env file for setup application db etc..
+
 `python craft migrate`
 
 `python craft seed:run Jobs`
@@ -45,4 +47,10 @@ The execution of the application with craft create a double instance of applicat
 it is because the watch-dog used in package Werkzeug don't close the first instance but
 create another for watching the files changes, threafter is not raccomanded.
 
-## 
+### Use job's arguments
+
+The `args` column is a json and is fillable in this way:
+
+`{'name': 'Job_A', 'class_name': 'Job_1', 'interval': 0.1, 'run': False, 'args': '{"key": "value"}'}`
+
+For getting a dictionary (dict type) is easy to retrive with `job_model.args` in the start method of Job.

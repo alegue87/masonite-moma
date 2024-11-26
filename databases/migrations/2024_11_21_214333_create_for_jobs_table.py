@@ -14,6 +14,7 @@ class CreateForJobsTable(Migration):
             table.string('class_name')
             table.decimal('interval').default(1)      # 1 second
             table.boolean('run').default(False)
+            table.json('args').nullable()
             table.timestamps()
 
     def down(self):
