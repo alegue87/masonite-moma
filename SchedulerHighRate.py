@@ -5,6 +5,8 @@ import time
 
 from app.models.Jobs import Jobs as JobsModel
 
+from datetime import datetime as dt
+
 import sys
 from importlib import reload, import_module  # Python 3.4+
 sys.path.insert(0, './app/jobs')
@@ -87,26 +89,48 @@ def run_manager(app, interval=5):
                             scheduler_hr.clear(job_model.name)
                     else:
                         if job_model.run == True:
-                            scheduler_hr.every(float(job_model.interval)).seconds \
-                                .do(
-                                    run_threaded, 
-                                    app=app,
-                                    job_model=job_model
-                                ) \
-                                .tag(job_model.name)
+                            if job_model.start_second > 0:
+                                sec = int(job_model.start_second)
+                                if sec < 10:
+                                    sec = ':0'+str(sec)
+                                else:
+                                    sec = ':'+str(sec)
+                                scheduler_hr.every().minute \
+                                    .at(sec)\
+                                    .do(
+                                        run_threaded, 
+                                        app=app,
+                                        job_model=job_model
+                                    ) \
+                                    .tag(job_model.name)
+                            else:
+                                scheduler_hr.every(float(job_model.interval)).seconds \
+                                    .do(
+                                        run_threaded, 
+                                        app=app,
+                                        job_model=job_model
+                                    ) \
+                                    .tag(job_model.name)
                 time.sleep(interval)
 
     continuous_thread = ScheduleThread()
     continuous_thread.start()
-    return cease_continuous_run
+    return continuous_thread 
 
 class SchedulerHighRate():
     def __init__(self, app, run_pending_interval=0.1, run_manager_interval=5) -> None:
-        
+        def monitor(manager_thread):
+            while True:
+                if not manager_thread.is_alive():
+                    manager_thread = run_manager(app, interval=run_manager_interval)
+                time.sleep(5)
+       
         app.singleton('scheduler_hr', schedule.Scheduler)
         
         self.stop_run_pending = run_pending(app, interval=run_pending_interval)
-        self.stop_run_manager = run_manager(app, interval=run_manager_interval)
+        manager_thread = run_manager(app, interval=run_manager_interval)
+
+        threading.Thread(target=monitor, args=(manager_thread,)).start()
 
     def stop(self):
         self.stop_run_pending.set()
