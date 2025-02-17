@@ -2,10 +2,12 @@
 
 Added features to Masonite framework:
 
-- Scheduler High Rate
+- Scheduler APScheduler
   - Parallel jobs execution
   - Load / discharge Jobs from database
-  - Dynamic code loading ( at runtime, no watchdog or --reload flag )
+  - Dynamic code loading ( at runtime, no watchdog or --reload flag ) 
+  
+      Necessary reload a job
 
 ## Load migrations and seeds
 
@@ -45,7 +47,7 @@ gunicorn:
 
 The execution of the application with craft create a double instance of application,
 it is because the watch-dog used in package Werkzeug don't close the first instance but
-create another for watching the files changes, threafter is not raccomanded.
+create another for watching the files changes, thereafter is not raccomanded.
 
 ### Use job's arguments
 

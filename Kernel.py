@@ -15,6 +15,7 @@ from masonite.configuration.Configuration import Configuration
 from masonite.configuration import config
 
 from app.middlewares import VerifyCsrfToken, AuthenticationMiddleware
+from masonite.api.middleware import JWTAuthenticationMiddleware
 
 import sys
 from SchedulerHighRate import SchedulerHighRate
@@ -26,6 +27,9 @@ class Kernel:
     route_middleware = {
         "web": [SessionMiddleware, LoadUserMiddleware, VerifyCsrfToken],
         "auth": [AuthenticationMiddleware],
+        "api": [
+            JWTAuthenticationMiddleware
+        ],
     }
 
     def __init__(self, app):
@@ -94,6 +98,7 @@ class Kernel:
         self.application.make("middleware").add(self.route_middleware).add(self.http_middleware)
 
     def register_routes(self):
+        self.application.bind("routes.api.location", "routes/api")
         Route.set_controller_locations(self.application.make("controllers.location"))
         self.application.bind("routes.location", "routes/web")
         self.application.make("router").add(

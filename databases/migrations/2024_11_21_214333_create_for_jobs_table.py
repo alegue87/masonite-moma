@@ -13,6 +13,7 @@ class CreateForJobsTable(Migration):
             table.string('name').unique()
             table.string('class_name')
             table.decimal('interval').default(1)      # 1 second
+            table.decimal('start_second').default(-1).nullable()
             table.boolean('run').default(False)
             table.json('args').nullable()
             table.timestamps()

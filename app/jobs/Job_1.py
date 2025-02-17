@@ -1,8 +1,12 @@
-
+from datetime import datetime as dt
+from time import sleep
 class Job_1:
     def start(app, job_model):
-        print('Job_1, jobname ' + job_model.name)
-
+        t = dt.now()
+        print('Job_1, jobname ' + job_model.name + ' st1 ', t.strftime("%H:%M:%S.%fZ"))
+        sleep(.9)
+        #t = dt.now()
+        #print('Job_1, jobname ' + job_model.name + ' st2', t.strftime("%H:%M:%S.%fZ"))
         # Usage of json args column
         #print(job_model.args['key'])
         

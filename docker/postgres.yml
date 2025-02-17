@@ -1,0 +1,60 @@
+# A Docker Compose application with Moqui, PostgreSQL, OpenSearch / Elasticsearch, OpenSearch Dashboards / Kibana, Grafana and virtual hosting through
+# nginx-proxy supporting multiple moqui instances on different hostnames.
+
+# Run with something like this for detached mode:
+# $ docker compose -f moqui-postgres-compose.yml -p moqui up -d
+# Or to copy runtime directories for mounted volumes, set default settings, etc use something like this:
+# $ ./compose-up.sh moqui-postgres-compose.yml
+# This sets the project/app name to 'moqui' and the network will be 'moqui_default', to be used by external moqui containers
+
+# Test locally by adding the virtual host to /etc/hosts or with something like:
+# $ curl -H "Host: moqui.local" localhost/Login
+
+# To run an additional instance of moqui run something like this (but with
+# many more arguments for volume mapping, db setup, etc):
+# $ docker run -e VIRTUAL_HOST=moqui2.local --name moqui2_local --network moqui_default moqui
+
+# To import data from the docker host using port 5432 mapped for 127.0.0.1 only use something like this:
+# $ psql -h 127.0.0.1 -p 5432 -U moqui -W moqui < pg-dump.sql
+
+# To reset password for Elasticsearch: bin/elasticsearch-reset-password -u elastic -i
+# To setup password kibana_system: bin/elasticsearch-reset-password -u kibana_system -i
+
+version: "3.9"
+services:
+
+  masonite-database:
+    image: postgres:14
+    container_name: masonite-database
+    restart: always
+    ports:
+      # change this as needed to bind to any address or even comment to not expose port outside containers
+      - 5432:5432
+    volumes:
+      # edit these as needed to map configuration and data storage
+      - ./db/postgres/data:/var/lib/postgresql/data
+      # - ./postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+    environment:
+      - POSTGRES_DB=masonite
+      - POSTGRES_DB_SCHEMA=public
+      - POSTGRES_USER=masonite
+      - POSTGRES_PASSWORD=masonite
+      # PGDATA, POSTGRES_INITDB_ARGS
+
+  masonite-database-test:
+    image: postgres:14
+    container_name: masonite-database-test
+    restart: always
+    ports:
+      # change this as needed to bind to any address or even comment to not expose port outside containers
+      - 5433:5432
+    volumes:
+      # edit these as needed to map configuration and data storage
+      - ./db/postgres/data_test:/var/lib/postgresql/data
+      # - ./postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+    environment:
+      - POSTGRES_DB=masonite_test
+      - POSTGRES_DB_SCHEMA=public
+      - POSTGRES_USER=masonite
+      - POSTGRES_PASSWORD=masonite
+      # PGDATA, POSTGRES_INITDB_ARGS
