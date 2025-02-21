@@ -108,28 +108,35 @@ def runner(app):
     t = dt.now()
     currentSec = int(t.strftime("%S"))
 
-    job_model_list = JobsModel.where('run', True).where('start_second', currentSec).get()
+    job_model_list = []
+    if currentSec == 0:
+        job_model_list = JobsModel.get()
+
     for job_model in job_model_list:
         #run_jobs.append(job_model)
        
-        try:
-            aps._lookup_job(job_id=job_model.name, jobstore_alias='default')
-        except Exception as e:  
-            method = Dimport(
-                module_name=job_model.class_name, 
-                class_name =job_model.class_name, 
-                app=app, 
-                job_model=job_model \
-            ).get_start_method()
-            aps.add_job(method, 'interval', seconds=int(job_model.interval), jitter=0, id=job_model.name, args=(app, job_model))
-    
-
-    job_model_list = JobsModel.where('run', False).get()
-    for job_model in job_model_list:
-        try:
-            aps.remove_job(job_id=job_model.name, jobstore='default')
-        except Exception as e:
-            pass
+        if job_model.run:
+            try:
+                aps._lookup_job(job_id=job_model.name, jobstore_alias='default')
+            except Exception as e:  
+                print('run ' + job_model.name)
+                method = Dimport(
+                    module_name=job_model.class_name, 
+                    class_name =job_model.class_name, 
+                    app=app, 
+                    job_model=job_model \
+                ).get_start_method()
+                aps.add_job(method, 'interval', 
+                    seconds=int(job_model.interval), 
+                    jitter=int(job_model.start_second), 
+                    id=job_model.name, 
+                    args=(app, job_model), 
+                    max_instances=3)
+        else: 
+            try:
+                aps.remove_job(job_id=job_model.name, jobstore='default')
+            except Exception as e:
+                pass
 
 def run_manager(app, interval=5):
     cease_continuous_run = threading.Event()
